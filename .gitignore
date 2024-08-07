@@ -1,0 +1,71 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.coverprofile
+
+# Directories for Go tools
+bin/
+obj/
+
+# Dependency directories (remove the comment below if you use dep)
+# vendor/
+
+# IDE/editor specific files
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vscode/
+
+# Project-specific
+.DS_Store
+.env
+
+# Node.js dependencies (if you have any front-end code)
+node_modules/
+
+# Logs
+*.log
+
+# Docker files
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Exclude specific environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Supabase metadata (if any)
+.supabase
+
+# Backup files
+*.bak
+*.swp
+
+# Compiled code
+*.o
+*.a
+*.out
+*.so
+
+# Backup files for Go in WSL
+*.bak
+
+# Ignore anything related to coverage reports
+coverage.out
+coverage/
+
+# Ignore generated Prisma files
+prisma/generated/
+prisma/.env
+
+# Ignore Nginx generated files
+nginx/generated/
