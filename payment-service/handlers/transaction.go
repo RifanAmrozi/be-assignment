@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -39,6 +40,9 @@ func Send(c *gin.Context) {
 		prisma.Transaction.Currency.Set(transaction.Currency),
 		prisma.Transaction.ToAddress.Set(transaction.ToAddress),
 		prisma.Transaction.Status.Set("processing"),
+		prisma.Transaction.Account.Link(
+			prisma.Account.ID.Equals(transaction.AccountId),
+		),
 	).Exec(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -70,6 +74,9 @@ func Withdraw(c *gin.Context) {
 		prisma.Transaction.Currency.Set(transaction.Currency),
 		prisma.Transaction.ToAddress.Set(transaction.ToAddress),
 		prisma.Transaction.Status.Set("processing"),
+		prisma.Transaction.Account.Link(
+			prisma.Account.ID.Equals(transaction.AccountId),
+		),
 	).Exec(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -81,4 +88,44 @@ func Withdraw(c *gin.Context) {
 	})
 
 	c.JSON(http.StatusOK, gin.H{"message": "Transaction processing started", "transaction": tx})
+}
+
+func GetAccounts(c *gin.Context) {
+	ctx := context.Background()
+	userIDStr := c.Param("userId")
+	userIDInt, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	accounts, err := config.PrismaClient.Account.FindMany(
+		prisma.Account.UserID.Equals(userIDInt),
+	).Exec(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, accounts)
+}
+
+func GetAccountTransactions(c *gin.Context) {
+	ctx := context.Background()
+	accountIDStr := c.Param("accountId")
+	accountID, err := strconv.Atoi(accountIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account ID"})
+		return
+	}
+
+	transactions, err := config.PrismaClient.Transaction.FindMany(
+		prisma.Transaction.AccountID.Equals(accountID),
+	).Exec(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, transactions)
 }
