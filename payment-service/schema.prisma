@@ -1,0 +1,26 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator db {
+  provider = "go run github.com/steebchen/prisma-client-go"
+}
+
+model Transaction {
+  id         Int      @id @default(autoincrement())
+  amount     Float
+  currency   String
+  toAddress  String
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Account {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  balance    Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
